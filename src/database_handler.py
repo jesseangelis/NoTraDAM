@@ -1,66 +1,11 @@
 import sqlite3
+import time
 from os import path, remove
 from typing import List
-import time
 
 import numpy as np
 import tqdm
 
-def worker(line):
-    if not line[0] == "#":
-        # Seperate fields. Attribute endings get truncated, in order to use " as seperator
-        chrom, _, feature, start, end, _, strand, _, attr = line.strip().split("\t")
-
-        #  Check if the end of the attribute is either ";" or ". If not, raise an error
-        if attr[-1] == ";":
-            attr = attr[:-1]
-        elif attr[-1] == '"':
-            pass
-        else:
-            raise ValueError(
-                'Was expecting the attribute ending to be either ";" or ". Check Ending of the attributes'
-            )
-        
-        # Split the attributes into key-value pairs
-        attr = attr.replace('"', "").replace("; ", ";").split(";")
-        attr_dict = {}
-        for pair in attr:
-            key, value = pair.split(" ", maxsplit=1)
-            attr_dict[key] = value
-        attr = attr_dict
-
-        # If the feature is a transcript and the transcript should be included in the database insert transcript data into the database
-        if "transcript_id" in attr.keys():
-            if included_transcripts is None or attr["transcript_id"] in included_transcripts:
-                if feature == "transcript":
-                
-                    connection.execute(
-                        f"INSERT INTO transcripts (transcript_id, chromosome, strand, start, end, sequence) VALUES (?, ?, ?, ?, ?, ?);",
-                        (
-                            attr["transcript_id"], 
-                            chrom, 
-                            strand, 
-                            start, 
-                            end, 
-                            "",
-                        ),
-                    )
-
-                # If the feature is an exon and the transcript should be included in the database insert exon data into the database
-                elif feature == "exon":
-                    connection.execute(
-                        f"INSERT INTO exons (transcript_id, chromosome, strand, start, end) VALUES (?, ?, ?, ?, ?);",
-                        (
-                            attr["transcript_id"],
-                            chrom,
-                            strand,
-                            start,
-                            end,
-                        ),
-                    )
-
-                # Commit changes to the database and close the connection
-                connection.commit()
 
 class AnnotationDB:
     """
