@@ -18,10 +18,6 @@ with pip:
 ```
 pip install -r requirements.txt
 ``` 
-with conda:
-```
-conda install --file requirements.txt
-```
 Test with:
 ```
 pytest
