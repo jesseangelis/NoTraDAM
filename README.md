@@ -1,7 +1,7 @@
 # NoTraDAM
 No<sub>vel</sub> Tra<sub>nscript</sub> D<sub>etection</sub> A<sub>lgorithm</sub> M<sub>etrics</sub>
 
-A tool to evaluate at tool's capabilities to identify novel transcripts based on GTF annotaion files. The evaluation is based on true positiv rate (TPR) and false discovery rate (FDR) depending on a sequence similarity threshold.
+A program for evaluating the ability of a detection tool to identify novel transcripts. For the evaluation, the predicted isoform sequences are compared with sequences of isoforms that are present in the reads but have been removed from the annotation.
 
 ## How to use
 
@@ -26,11 +26,9 @@ pytest
 ## Method
 
 Before utilizing NoTraDAM, you need to follow these steps:
-- Have a genome annotation file (reference annotation) and chromosome sequence file (genome fasta) ready
-- Use these to simulate reads
-- Remove a subest of the transcripts and their exons from the gtf file
-- Use a novel transcript detection algortihm with the simulated reads and the reduced annotation file.
-- The algorithm should produce a new annotaiton file (query annotation) where the known and novel transcripts are included
+- Simulate reads based on a reference annotation. 
+- Remove a subset of the annotated reads from the reference.
+- Predict novel transcripts with your tool of interest.
 
 Run command:
 ```
@@ -39,7 +37,7 @@ python notradam.py -r reference_annoation.gtf -n query_annotation1.gtf query_ann
 
 | Argument                            | Description                                                                                                      |
 | ------------------------------------| ---------------------------------------------------------------------------------------------------------------- |
-| `-r, --reference_annotation`         | The reference annotation as .gtf file                                                                            |
+| `-r, --reference_annotation`         | The orignial reference annotation as .gtf file                                                                            |
 | `-n, --query_annotations`            | The predicted annotation or annotations as .gtf file/s                                                           |
 | `-i, --transcript_ids`               | Text file, containing the transcript IDs, to be included in the analysis. If not given, all transcripts will be included |
 | `-f, --genome_fasta`                 | Fasta file with chromosome sequences. The chromosome IDs must be the same as in the annotations               |
@@ -76,8 +74,8 @@ NoTraDam works as follows:
 - 1. For every chromosome-strand combination a transcript subset is selected from the reference and query annotation
 - 2. Matches where there is an overlap of the transcript start and end postions are found
 - 3. For each match the best allignment is found and a simularity score is calculated. This is the number of identical bases divided by the length of the allignment.
-- 4. For each reference and query transcript the maximum found similarity is saved.
-- 5. Based on a similarity threshold tpr and fdr are calculated
+- 4. For each reference and query transcript the maximum similarity is saved.
+- 5. Based on a given similarity threshold the tpr and fdr are calculated
 
 
 ### True positive rate (Sensetivity)
